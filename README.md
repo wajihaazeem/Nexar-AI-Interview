@@ -2,11 +2,23 @@
 
 **Contact-center-grade voice interviews, powered by Gemini Live.**
 
-Nexar is a full-stack interview platform in which candidates authenticate with a **Name + CNIC** credential (no password) and complete a **real-time voice interview** against an AI interviewer. Live audio is streamed over WebSocket, both parties are transcribed in real time, and the post-interview pipeline — candidate onboarding, structured evaluation, reviewer cards, and outcome notifications — is orchestrated by n8n against PostgreSQL, Trello, Notion, and Gmail.
+Nexar is a full-stack interview platform in which candidates authenticate with a **Name + CNIC** credential (no password) and complete a **real-time voice interview** against an AI interviewer. Live audio is streamed over WebSocket, both parties are transcribed in real time, and the post-interview pipeline — candidate onboarding, structured evaluation, reviewer cards, and outcome notifications — is orchestrated by n8n against **Google Sheets**, Trello, Notion, and Gmail.
 
 ---
 
-## 1. System Architecture
+## 1. Features
+
+- **Name + CNIC login** — no password; verified against the registered-candidates sheet (n8n)
+- **Real-time live voice interview** — Gemini Live API over WebSocket (16 kHz), with barge-in
+- **Live transcript** — both Nexar and the candidate are transcribed as they speak
+- **Real webcam** — live `getUserMedia` feed with on/off control and permission error handling
+- **Real mic mute** — audio stream control with explicit button state (icon toggles)
+- **Status-aware workspace** — AI speaking / listening / offline indicators, waveform, timer, current-question card, candidate name
+- **Single-brand design system** — navy `#0b1120` + blue `#1e65ff` derived from the Nexar mark, used consistently (navbar, buttons, cards, transcripts)
+
+---
+
+## 2. System Architecture
 
 ```
 ┌─────────────────────────── CLIENT (Vite / React 18) ───────────────────────────┐
@@ -37,7 +49,7 @@ Nexar is a full-stack interview platform in which candidates authenticate with a
 
 ---
 
-## 2. Repository Layout
+## 3. Repository Layout
 
 ```
 nexar/
@@ -56,7 +68,7 @@ nexar/
 
 ---
 
-## 3. Tech Stack
+## 4. Tech Stack
 
 | Layer | Technology | Purpose |
 | --- | --- | --- |
@@ -71,16 +83,16 @@ nexar/
 
 ---
 
-## 4. Local Development
+## 5. Local Development
 
-### 4.1 Prerequisites
+### 5.1 Prerequisites
 
 - Node.js ≥ 18
 - Docker with `docker compose` (for the backend stack)
 - A Gemini API key with Live API access
 - Java (required by n8n's document extraction nodes, optional)
 
-### 4.2 Frontend + Voice Proxy
+### 5.2 Frontend + Voice Proxy
 
 ```bash
 npm install
@@ -93,7 +105,7 @@ npm run dev                   # starts proxy :8787 + Vite :5173
 | Web app | `http://localhost:5173` |
 | Voice proxy | `ws://localhost:8787/live` |
 
-### 4.3 Backend (n8n + PostgreSQL)
+### 5.3 Backend (n8n + PostgreSQL)
 
 ```bash
 cd deploy
@@ -104,7 +116,7 @@ n8n is exposed on `http://localhost:5678`. CORS is pre-configured so the browser
 
 ---
 
-## 5. n8n Workflows
+## 6. n8n Workflows
 
 ### Workflow A — Candidate Onboarding (CV Upload)
 
@@ -162,7 +174,7 @@ Email
 
 ---
 
-## 6. Environment Variables
+## 7. Environment Variables
 
 | Variable | Scope | Description |
 | --- | --- | --- |
@@ -175,7 +187,7 @@ Email
 
 ---
 
-## 7. Design System
+## 8. Design System
 
 Typography and palette are derived from the Nexar brand mark:
 
@@ -186,7 +198,7 @@ Typography and palette are derived from the Nexar brand mark:
 
 ---
 
-## 8. Security & Operational Notes
+## 9. Security & Operational Notes
 
 - The Gemini key exists only in `server/`'s environment; the public surface is a tiny WS proxy.
 - n8n webhooks should be guarded (webhook auth or an HMAC token in production) to prevent unauthenticated login/session creation.
@@ -196,7 +208,7 @@ Typography and palette are derived from the Nexar brand mark:
 
 ---
 
-## 9. Roadmap
+## 10. Roadmap
 
 - [ ] Wire the Name + CNIC login to Workflow A's verification endpoint (real auth)
 - [ ] Emit `Interview Completed` events to Workflow B with transcript + metadata

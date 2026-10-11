@@ -22,8 +22,8 @@ Nexar is a full-stack interview platform in which candidates authenticate with a
 │  ▸ interview records│      │  ● translates frames      │
 │  ▸ evaluation, mail │      │  ● injects system prompt  │
 └───────┬─────────────┘      └───────────┬───────────────┘
-        │ PostgreSQL                       │ WebSocket
-        │                                  ▼
+        │ PostgreSQL                     │WebSocket
+        │                                ▼
         ▼                     ┌───────────────────────────┐
    Trello / Notion / Gmail    │  Google Gemini Live       │
    (review + notify)          └───────────────────────────┘

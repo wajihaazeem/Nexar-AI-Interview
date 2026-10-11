@@ -22,8 +22,8 @@ Nexar is a full-stack interview platform in which candidates authenticate with a
 │  ▸ interview records│      │  ● translates frames      │
 │  ▸ evaluation, mail │      │  ● injects system prompt  │
 └───────┬─────────────┘      └───────────┬───────────────┘
-        │ PostgreSQL                     │WebSocket
-        │                                ▼
+        │  ▸ candidates: Google Sheets    │ WebSocket
+        │  ▸ n8n internal DB: PostgreSQL  ▼
         ▼                     ┌───────────────────────────┐
    Trello / Notion / Gmail    │  Google Gemini Live       │
    (review + notify)          └───────────────────────────┘
@@ -64,7 +64,8 @@ nexar/
 | Audio | Gemini **Live** API (WS) | Streaming voice, transcriptions, barge-in |
 | Proxy | Node.js — `ws`, `dotenv` | Secure key handling, protocol translation |
 | Orchestration | **n8n** (Docker) | Backend workflows, integrations |
-| Storage | **PostgreSQL 16** | Candidate + interview + session persistence |
+| Candidate data | **Google Sheets** | Registered candidates + interview records (via n8n) |
+| n8n internal DB | PostgreSQL 16 | n8n's own workflows/settings store (docker-compose) |
 | Review | Trello, Notion | Reviewer cards / structured evaluation |
 | Notifications | Gmail (via n8n) | Outcome emails |
 
@@ -118,14 +119,14 @@ Edit Fields — Candidate Data
         ↓
 Generate / Retrieve Candidate ID
         ↓
-Save Candidate Profile          (PostgreSQL)
+Save Candidate Profile          (Google Sheets)
         ↓
 Create Interview Session
         ↓
 Respond to Webhook
 ```
 
-**Responsibilities:** Ingest a CV, extract and sanitize candidate data, persist the profile in PostgreSQL, create an interview session, and return the session to the caller. This table is also the **authoritative source for login verification** (Name + CNIC lookup).
+**Responsibilities:** Ingest a CV, extract and sanitize candidate data, persist the profile in a **Google Sheet**, create an interview session, and return the session to the caller. This sheet is also the **authoritative source for login verification** (Name + CNIC lookup).
 
 **Contract (outbound):** `200 OK` with candidate + session identifiers.
 
